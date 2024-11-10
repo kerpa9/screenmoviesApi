@@ -1,22 +1,59 @@
 package com.kevenreyes.searchmovies.models;
 
+import java.util.List;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+
+@Entity
+@Table(name = "series")
 public class Serie {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long Id;
+
+    @Column(unique = true)
     private String title;
     private Integer totalSeasons;
     private String imdbRating;
     private String poster;
-    private String genre;
+
+    @Enumerated(EnumType.STRING)
+    private Category genre;
     private String actors;
     private String synopsis;
+
+    @Transient
+    private List<Episodes> episodeses;
 
     public Serie(DatasSeries datasSeries) {
         this.title = datasSeries.title();
         this.totalSeasons = datasSeries.totalSeasons();
         this.imdbRating = datasSeries.imdbRating();
         this.poster = datasSeries.poster();
-        this.genre = datasSeries.genre();
+        // this.genre = datasSeries.genre();
         this.actors = datasSeries.actors();
         this.synopsis = datasSeries.synopsis();
+    }
+
+    public Long getId() {
+        return Id;
+    }
+
+    public void setId(Long id) {
+        Id = id;
+    }
+
+    public void setGenre(Category genre) {
+        this.genre = genre;
     }
 
     public String getTitle() {
@@ -51,13 +88,13 @@ public class Serie {
         this.poster = poster;
     }
 
-    public String getGenre() {
+    public Category getGenre() {
         return genre;
     }
 
-    public void setGenre(String genre) {
-        this.genre = genre;
-    }
+    // public void setGenre(String genre) {
+    // this.genre = genre;
+    // }
 
     public String getActors() {
         return actors;

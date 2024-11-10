@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import com.kevenreyes.searchmovies.models.DataSeasons;
 import com.kevenreyes.searchmovies.models.DatasSeries;
 import com.kevenreyes.searchmovies.models.Serie;
+import com.kevenreyes.searchmovies.repository.SeriesRepository;
 import com.kevenreyes.searchmovies.services.ConsultApi;
 import com.kevenreyes.searchmovies.services.ConverterData;
 
@@ -21,6 +22,11 @@ public class PrincipalApp {
 
     private ConverterData converterData = new ConverterData();
     private List<DatasSeries> datasSeries = new ArrayList<>();
+    private SeriesRepository repository;
+
+    public PrincipalApp(SeriesRepository repository) {
+        this.repository = repository;
+    }
 
     public void showMenu() {
         var option = -1;
@@ -92,7 +98,9 @@ public class PrincipalApp {
 
     private void searchSeriesWeb() {
         DatasSeries datas = getDataSerie();
-        datasSeries.add(datas);
+        // datasSeries.add(datas);
+        Serie serie = new Serie(datas);
+        repository.save(serie);
         System.out.println(datas);
 
     }
