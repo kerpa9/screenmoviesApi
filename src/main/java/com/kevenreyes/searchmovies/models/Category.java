@@ -19,6 +19,6 @@ public enum Category {
                 return category;
             }
         }
-        throw new IllegalArgumentException("No category found" + text);
+        throw new IllegalArgumentException("Not category found" + text);
     }
 }

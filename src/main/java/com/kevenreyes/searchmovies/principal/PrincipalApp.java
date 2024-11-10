@@ -20,12 +20,12 @@ public class PrincipalApp {
     private Scanner write = new Scanner(System.in);
     private ConsultApi consultApi = new ConsultApi();
     private final String URL_BASE = "https://www.omdbapi.com/?t=";
-    private final String API_KEY = "&apikey=${API_KEY_OMDB}";
+    private final String API_KEY = "&apikey=e4009d7f";
 
     private ConverterData converterData = new ConverterData();
-    private List<DatasSeries> datasSeries = new ArrayList<>();
+    // private List<DatasSeries> datasSeries = new ArrayList<>();
     private SeriesRepository repository;
-    List<Serie> series;
+    private List<Serie> series;
 
     public PrincipalApp(SeriesRepository repository) {
         this.repository = repository;
@@ -79,11 +79,13 @@ public class PrincipalApp {
         var nameSerie = write.nextLine();
         var url = URL_BASE + nameSerie.replace(" ", "+") + API_KEY;
         var json = consultApi.dataObtain(url);
+        System.out.println(json);
 
         DatasSeries data = converterData.obtainData(json, DatasSeries.class);
 
         return data;
     }
+
 
     private void searchEpisodeToSerie() {
         viewSeriesFound();
@@ -94,11 +96,12 @@ public class PrincipalApp {
                 .filter(s -> s.getTitle().toLowerCase().contains(nameSerie.toLowerCase())).findFirst();
 
         if (serie.isPresent()) {
+
             var serieFound = serie.get();
             List<DataSeasons> seasons = new ArrayList<>();
 
             for (int i = 1; i <= serieFound.getTotalSeasons(); i++) {
-                var url = URL_BASE + serieFound.getTitle().replace(" ", "+") + "&season" + i + API_KEY;
+                var url = URL_BASE + serieFound.getTitle().replace(" ", "+") + "&season=" + i + API_KEY;
                 var json = consultApi.dataObtain(url);
                 DataSeasons dataSeasons = converterData.obtainData(json, DataSeasons.class);
 
@@ -106,27 +109,30 @@ public class PrincipalApp {
             }
 
             seasons.forEach(System.out::println);
+
             List<Episodes> episodes = seasons.stream()
                     .flatMap(d -> d.episodes().stream().map(e -> new Episodes(d.number(), e)))
                     .collect(Collectors.toList());
 
-            serieFound.setEpisodeses(episodes);
+            serieFound.setepisodes(episodes);
             repository.save(serieFound);
-            
-            
-            System.out.println(seasons);
-            
+
+            // System.out.println(seasons);
+
+        }else{
+            System.out.println("----------Paila-------");
         }
 
     }
-
+    
+    
     private void searchSeriesWeb() {
         DatasSeries datas = getDataSerie();
         // datasSeries.add(datas);
         Serie serie = new Serie(datas);
         repository.save(serie);
         System.out.println(datas);
-
+        
     }
 
     private void viewSeriesFound() {

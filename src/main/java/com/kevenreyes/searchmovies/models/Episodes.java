@@ -14,10 +14,10 @@ import jakarta.persistence.Table;
 @Table(name = "episodes")
 public class Episodes {
 
-    //PK primary key
+    // PK primary key
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
     //
 
@@ -30,10 +30,12 @@ public class Episodes {
     @ManyToOne
     private Serie serie;
 
-    public Episodes(){ }
+    public Episodes() {
+    }
 
     public Episodes(Integer number, DataEpisode d) {
-        this.season = season;
+
+        this.season = number;
         this.title = d.title();
         this.numEpisodes = d.numEpisode();
 
@@ -42,11 +44,14 @@ public class Episodes {
             this.evaluation = Double.valueOf(d.evaluation());
 
         } catch (NumberFormatException e) {
+            
             this.evaluation = 0.0;
         }
+        
         try {
 
             this.releaseSeason = LocalDate.parse(d.dateReleased());
+
         } catch (DateTimeParseException e) {
             this.releaseSeason = null;
 

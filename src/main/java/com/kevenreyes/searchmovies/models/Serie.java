@@ -1,16 +1,20 @@
 package com.kevenreyes.searchmovies.models;
 
 import java.util.List;
+import java.util.OptionalDouble;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+
 
 @Entity
 @Table(name = "series")
@@ -23,7 +27,7 @@ public class Serie {
     @Column(unique = true)
     private String title;
     private Integer totalSeasons;
-    private String imdbRating;
+    private Double evaluation;
     private String poster;
 
     @Enumerated(EnumType.STRING)
@@ -31,28 +35,29 @@ public class Serie {
     private String actors;
     private String synopsis;
 
-    @OneToMany(mappedBy="serie") 
-    private List<Episodes> episodeses;
+    @OneToMany(mappedBy = "serie", cascade = CascadeType.ALL, fetch=FetchType.EAGER)
+    private List<Episodes> episodes;
 
     public Serie() {
-    }
-
-    public List<Episodes> getEpisodeses() {
-        return episodeses;
-    }
-
-    public void setEpisodeses(List<Episodes> episodeses) {
-        this.episodeses = episodeses;
     }
 
     public Serie(DatasSeries datasSeries) {
         this.title = datasSeries.title();
         this.totalSeasons = datasSeries.totalSeasons();
-        this.imdbRating = datasSeries.imdbRating();
+        this.evaluation = OptionalDouble.of(Double.valueOf(datasSeries.evaluation())).orElse(0);
         this.poster = datasSeries.poster();
-        // this.genre = datasSeries.genre();
+        this.genre = Category.fromString(datasSeries.genre().split(",")[0].trim());
         this.actors = datasSeries.actors();
         this.synopsis = datasSeries.synopsis();
+    }
+
+    public List<Episodes> getepisodes() {
+        return episodes;
+    }
+
+    public void setepisodes(List<Episodes> episodes) {
+        episodes.forEach(e -> e.setSerie(this));
+        this.episodes = episodes;
     }
 
     public Long getId() {
@@ -61,6 +66,10 @@ public class Serie {
 
     public void setId(Long id) {
         Id = id;
+    }
+
+    public Category getGenre() {
+        return genre;
     }
 
     public void setGenre(Category genre) {
@@ -83,12 +92,12 @@ public class Serie {
         this.totalSeasons = totalSeasons;
     }
 
-    public String getImdbRating() {
-        return imdbRating;
+    public Double getevaluation() {
+        return evaluation;
     }
 
-    public void setImdbRating(String imdbRating) {
-        this.imdbRating = imdbRating;
+    public void setevaluation(Double evaluation) {
+        this.evaluation = evaluation;
     }
 
     public String getPoster() {
@@ -98,14 +107,6 @@ public class Serie {
     public void setPoster(String poster) {
         this.poster = poster;
     }
-
-    public Category getGenre() {
-        return genre;
-    }
-
-    // public void setGenre(String genre) {
-    // this.genre = genre;
-    // }
 
     public String getActors() {
         return actors;
@@ -129,7 +130,10 @@ public class Serie {
         return "Genre= " + genre +
                 ", Title= " + title + '\'' +
                 ", numEpisodes= " + totalSeasons +
-                ", Evaluation= " + imdbRating +
+                ", Evaluation= " + evaluation +
+                ", Poster= " + poster +
+                ", Actors= " + actors +
+                ", Episodes= " + episodes +
                 ", Synopsis= " + synopsis;
     }
 

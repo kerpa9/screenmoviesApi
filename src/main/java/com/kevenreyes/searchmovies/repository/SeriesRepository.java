@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.kevenreyes.searchmovies.models.Serie;
 
-public interface SeriesRepository extends JpaRepository<Serie, Long> {
+public interface SeriesRepository extends JpaRepository<Serie,Long> {
     
     
 
