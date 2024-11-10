@@ -3,10 +3,13 @@ package com.kevenreyes.searchmovies.principal;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 import com.kevenreyes.searchmovies.models.DataSeasons;
 import com.kevenreyes.searchmovies.models.DatasSeries;
+import com.kevenreyes.searchmovies.models.Episodes;
 import com.kevenreyes.searchmovies.models.Serie;
 import com.kevenreyes.searchmovies.repository.SeriesRepository;
 import com.kevenreyes.searchmovies.services.ConsultApi;
@@ -17,11 +20,12 @@ public class PrincipalApp {
     private Scanner write = new Scanner(System.in);
     private ConsultApi consultApi = new ConsultApi();
     private final String URL_BASE = "https://www.omdbapi.com/?t=";
-    private final String API_KEY = "&apikey=e2a21826";
+    private final String API_KEY = "&apikey=${API_KEY_OMDB}";
 
     private ConverterData converterData = new ConverterData();
     private List<DatasSeries> datasSeries = new ArrayList<>();
     private SeriesRepository repository;
+    List<Serie> series;
 
     public PrincipalApp(SeriesRepository repository) {
         this.repository = repository;
@@ -82,17 +86,38 @@ public class PrincipalApp {
     }
 
     private void searchEpisodeToSerie() {
-        DatasSeries datasSeries = getDataSerie();
-        List<DataSeasons> seasons = new ArrayList<>();
+        viewSeriesFound();
+        System.out.println("------------Write name espisodes view series---------");
+        var nameSerie = write.nextLine();
 
-        for (int i = 1; i <= datasSeries.totalSeasons(); i++) {
-            var url = URL_BASE + datasSeries.title().replace(" ", "+") + "&season" + i + API_KEY;
-            var json = consultApi.dataObtain(url);
-            DataSeasons dataSeasons = converterData.obtainData(json, DataSeasons.class);
+        Optional<Serie> serie = series.stream()
+                .filter(s -> s.getTitle().toLowerCase().contains(nameSerie.toLowerCase())).findFirst();
 
-            seasons.add(dataSeasons);
+        if (serie.isPresent()) {
+            var serieFound = serie.get();
+            List<DataSeasons> seasons = new ArrayList<>();
+
+            for (int i = 1; i <= serieFound.getTotalSeasons(); i++) {
+                var url = URL_BASE + serieFound.getTitle().replace(" ", "+") + "&season" + i + API_KEY;
+                var json = consultApi.dataObtain(url);
+                DataSeasons dataSeasons = converterData.obtainData(json, DataSeasons.class);
+
+                seasons.add(dataSeasons);
+            }
+
+            seasons.forEach(System.out::println);
+            List<Episodes> episodes = seasons.stream()
+                    .flatMap(d -> d.episodes().stream().map(e -> new Episodes(d.number(), e)))
+                    .collect(Collectors.toList());
+
+            serieFound.setEpisodeses(episodes);
+            repository.save(serieFound);
+            
+            
+            System.out.println(seasons);
+            
         }
-        seasons.forEach(System.out::println);
+
     }
 
     private void searchSeriesWeb() {
@@ -105,7 +130,7 @@ public class PrincipalApp {
     }
 
     private void viewSeriesFound() {
-        List<Serie> series = repository.findAll();
+        series = repository.findAll();
 
         series.stream().sorted(Comparator.comparing(Serie::getGenre)).forEach(System.out::println);
     }

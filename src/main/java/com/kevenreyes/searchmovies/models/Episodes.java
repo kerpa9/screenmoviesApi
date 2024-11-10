@@ -3,13 +3,34 @@ package com.kevenreyes.searchmovies.models;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "episodes")
 public class Episodes {
+
+    //PK primary key
+
+    @Id
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    private Long Id;
+    //
 
     private Integer season;
     private String title;
     private Integer numEpisodes;
     private Double evaluation;
     private LocalDate releaseSeason;
+
+    @ManyToOne
+    private Serie serie;
+
+    public Episodes(){ }
 
     public Episodes(Integer number, DataEpisode d) {
         this.season = season;
@@ -30,6 +51,14 @@ public class Episodes {
             this.releaseSeason = null;
 
         }
+    }
+
+    public Serie getSerie() {
+        return serie;
+    }
+
+    public void setSerie(Serie serie) {
+        this.serie = serie;
     }
 
     public Integer getSeason() {

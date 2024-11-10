@@ -9,8 +9,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "series")
@@ -31,10 +31,18 @@ public class Serie {
     private String actors;
     private String synopsis;
 
-    @Transient
+    @OneToMany(mappedBy="serie") 
     private List<Episodes> episodeses;
 
     public Serie() {
+    }
+
+    public List<Episodes> getEpisodeses() {
+        return episodeses;
+    }
+
+    public void setEpisodeses(List<Episodes> episodeses) {
+        this.episodeses = episodeses;
     }
 
     public Serie(DatasSeries datasSeries) {
