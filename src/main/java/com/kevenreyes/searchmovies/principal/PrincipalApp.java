@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 
 import com.kevenreyes.searchmovies.models.DataSeasons;
 import com.kevenreyes.searchmovies.models.DatasSeries;
@@ -106,8 +105,7 @@ public class PrincipalApp {
     }
 
     private void viewSeriesFound() {
-        List<Serie> series = new ArrayList<>();
-        series = datasSeries.stream().map(d -> new Serie(d)).collect(Collectors.toList());
+        List<Serie> series = repository.findAll();
 
         series.stream().sorted(Comparator.comparing(Serie::getGenre)).forEach(System.out::println);
     }
