@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
+import com.kevenreyes.searchmovies.models.Category;
 import com.kevenreyes.searchmovies.models.DataSeasons;
 import com.kevenreyes.searchmovies.models.DatasSeries;
 import com.kevenreyes.searchmovies.models.Episodes;
@@ -41,6 +42,8 @@ public class PrincipalApp {
                     2 - Search episodes
                     3 - Saw series finded
                     4 - Find series by title
+                    5 - Top five favorite series
+                    6 - Find series by category
 
                     0 - Close App
 
@@ -67,6 +70,17 @@ public class PrincipalApp {
                     // System.out.println("Write name this episode to find");
                     findSeriesByTitle();
                     break;
+
+                case 5:
+                    // System.out.println("Write name this episode to find");
+                    findTopFiveSeries();
+                    break;
+
+                case 6:
+                    // System.out.println("Write name this episode to find");
+                    findSeriesByCategory();
+                    break;
+
                 case 0:
                     System.out.println("Close this app, Thanks");
 
@@ -152,10 +166,29 @@ public class PrincipalApp {
 
         if (foundSerie.isPresent()) {
             System.out.println("Serie founded: " + foundSerie.get());
-        }else{
+        } else {
             System.out.println("Serie not founded");
         }
-
     }
 
+    private void findTopFiveSeries() {
+
+        List<Serie> topSeries = repository.findTop5ByOrderByEvaluationDesc();
+        topSeries.forEach(s -> System.out.println(" Serie: " + s.getTitle() + " Evaluation: " + s.getevaluation()));
+    }
+
+    private void findSeriesByCategory() {
+
+        System.out.println("Write find genre/category serie");
+        var categorySerie = write.nextLine();
+
+        var category = Category.fromString(categorySerie);
+
+        List<Serie> seriesByCategory = repository.findByGenre(category);
+
+        System.out.println(" Category series: " + categorySerie);
+
+        seriesByCategory.forEach(System.out::println);
+
+    }
 }
