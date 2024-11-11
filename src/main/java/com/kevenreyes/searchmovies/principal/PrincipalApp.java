@@ -40,6 +40,7 @@ public class PrincipalApp {
                     1 - Search series
                     2 - Search episodes
                     3 - Saw series finded
+                    4 - Find series by title
 
                     0 - Close App
 
@@ -61,6 +62,10 @@ public class PrincipalApp {
                 case 3:
                     // System.out.println("Write name this episode to find");
                     viewSeriesFound();
+                    break;
+                case 4:
+                    // System.out.println("Write name this episode to find");
+                    findSeriesByTitle();
                     break;
                 case 0:
                     System.out.println("Close this app, Thanks");
@@ -85,7 +90,6 @@ public class PrincipalApp {
 
         return data;
     }
-
 
     private void searchEpisodeToSerie() {
         viewSeriesFound();
@@ -119,26 +123,39 @@ public class PrincipalApp {
 
             // System.out.println(seasons);
 
-        }else{
+        } else {
             System.out.println("----------Paila-------");
         }
 
     }
-    
-    
+
     private void searchSeriesWeb() {
         DatasSeries datas = getDataSerie();
         // datasSeries.add(datas);
         Serie serie = new Serie(datas);
         repository.save(serie);
         System.out.println(datas);
-        
+
     }
 
     private void viewSeriesFound() {
         series = repository.findAll();
 
         series.stream().sorted(Comparator.comparing(Serie::getGenre)).forEach(System.out::println);
+    }
+
+    private void findSeriesByTitle() {
+        System.out.println("Write name series");
+        var nameSeries = write.nextLine();
+
+        Optional<Serie> foundSerie = repository.findByTitleContainsIgnoreCase(nameSeries);
+
+        if (foundSerie.isPresent()) {
+            System.out.println("Serie founded: " + foundSerie.get());
+        }else{
+            System.out.println("Serie not founded");
+        }
+
     }
 
 }
