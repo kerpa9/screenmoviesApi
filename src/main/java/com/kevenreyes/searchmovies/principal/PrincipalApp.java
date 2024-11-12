@@ -27,6 +27,7 @@ public class PrincipalApp {
     // private List<DatasSeries> datasSeries = new ArrayList<>();
     private SeriesRepository repository;
     private List<Serie> series;
+    Optional<Serie> foundSerie;
 
     public PrincipalApp(SeriesRepository repository) {
         this.repository = repository;
@@ -44,6 +45,9 @@ public class PrincipalApp {
                     4 - Find series by title
                     5 - Top five favorite series
                     6 - Find series by category
+                    7 - Find series by totalSeason and evaluation
+                    8 - Find episodes by title
+                    9 - Top five episode by serie
 
                     0 - Close App
 
@@ -79,6 +83,21 @@ public class PrincipalApp {
                 case 6:
                     // System.out.println("Write name this episode to find");
                     findSeriesByCategory();
+                    break;
+
+                case 7:
+                    // System.out.println("Write name this episode to find");
+                    findSeriesBySeason();
+                    break;
+
+                case 8:
+                    // System.out.println("Write name this episode to find");
+                    findEpisodesByTitle();
+                    break;
+
+                case 9:
+                    // System.out.println("Write name this episode to find");
+                    findTopFiveEpisode();
                     break;
 
                 case 0:
@@ -161,8 +180,7 @@ public class PrincipalApp {
     private void findSeriesByTitle() {
         System.out.println("Write name series");
         var nameSeries = write.nextLine();
-
-        Optional<Serie> foundSerie = repository.findByTitleContainsIgnoreCase(nameSeries);
+        foundSerie = repository.findByTitleContainsIgnoreCase(nameSeries);
 
         if (foundSerie.isPresent()) {
             System.out.println("Serie founded: " + foundSerie.get());
@@ -189,6 +207,49 @@ public class PrincipalApp {
         System.out.println(" Category series: " + categorySerie);
 
         seriesByCategory.forEach(System.out::println);
+
+    }
+
+    private void findSeriesBySeason() {
+
+        System.out.println("Write number filter to seasons");
+        var totalSeason = write.nextInt();
+        write.nextLine();
+
+        System.out.println("Write number filter to evaluations");
+        var evaluation = write.nextDouble();
+        write.nextLine();
+
+        List<Serie> filterSerie = repository.seriesBySeasonsAndEvaluation(totalSeason, evaluation);
+        System.out.println("Filters series");
+
+        filterSerie.forEach(s -> System.out.println(s.getTitle() + " Evaluation: " + s.getevaluation()));
+
+    }
+
+    private void findEpisodesByTitle() {
+        System.out.println("Write name filter to episode");
+        var nameEpisode = write.nextLine();
+
+        List<Episodes> episodesFounded = repository.episodesName(nameEpisode);
+
+        episodesFounded.forEach(e -> System.out.printf("Serie: %s  Season %s Episode %s Evaluation %s", e.getSerie(),
+                e.getSeason(), e.getNumEpisodes(), e.getEvaluation()));
+
+    }
+
+    private void findTopFiveEpisode() {
+        findSeriesByTitle();
+
+        if (foundSerie.isPresent()) {
+            Serie serie = foundSerie.get();
+
+            List<Episodes> topEpisodes = repository.top5episodes(serie);
+
+            topEpisodes.forEach(e -> System.out.printf("Serie: %s  Season %s Episode %s Evaluation %s", e.getSerie(),
+            e.getSeason(), e.getNumEpisodes(), e.getEvaluation()));
+
+        }
 
     }
 }
