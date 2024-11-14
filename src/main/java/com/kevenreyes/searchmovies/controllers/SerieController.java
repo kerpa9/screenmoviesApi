@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kevenreyes.searchmovies.dto.EpisodesDTO;
 import com.kevenreyes.searchmovies.dto.SerieDTO;
 import com.kevenreyes.searchmovies.services.SerieServices;
 
@@ -37,6 +38,20 @@ public class SerieController {
     @GetMapping("/{id}")
     public SerieDTO obtainById(@PathVariable Long id){
         return services.obtainById(id);
+
+    }
+
+    @GetMapping("/{id}/seasons/all")
+    public List<EpisodesDTO> obtainAllSeasons(@PathVariable Long id){
+
+        return services.obtainAllDatas(id);
+        
+    }
+
+    @GetMapping("/{id}/seasons/{numSeason}")
+    public List<EpisodesDTO> obtainSeasonByNum(@PathVariable Long id, @PathVariable Long numSeason){
+
+        return services.obtainSeasonByNum(id, numSeason);
 
     }
 
