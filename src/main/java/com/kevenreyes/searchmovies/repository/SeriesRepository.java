@@ -24,13 +24,14 @@ public interface SeriesRepository extends JpaRepository<Serie, Long> {
     // NATIVE QUERYS
     @Query("SELECT s FROM Serie s WHERE s.totalSeasons >= :totalSeasons AND s.evaluation >= :evaluation")
     List<Serie> seriesBySeasonsAndEvaluation(int totalSeasons, Double evaluation);
-    
-    
+
     @Query("SELECT e FROM Serie s JOIN s.episodes e WHERE e.title ILIKE %:nameEpisode%")
     List<Episodes> episodesName(String nameEpisode);
-    
+
     @Query("SELECT e FROM Serie s JOIN s.episodes e WHERE s = :serie ORDER BY e.evaluation DESC LIMIT 5")
     List<Episodes> top5episodes(Serie serie);
-    
+
+    @Query("SELECT s FROM Serie s  JOIN s.episodes e  GROUP BY s  ORDER BY MAX(e.releaseSeason) DESC LIMIT 5")
+    List<Serie> latestReleases();
 
 }
