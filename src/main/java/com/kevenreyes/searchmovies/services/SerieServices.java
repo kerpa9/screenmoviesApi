@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.kevenreyes.searchmovies.dto.EpisodesDTO;
 import com.kevenreyes.searchmovies.dto.SerieDTO;
+import com.kevenreyes.searchmovies.models.Category;
 import com.kevenreyes.searchmovies.models.Serie;
 import com.kevenreyes.searchmovies.repository.SeriesRepository;
 
@@ -60,6 +61,11 @@ public class SerieServices {
         return repository.obtainSeasonsByNum(id, numSeason).stream()
                 .map(e -> new EpisodesDTO(e.getSeason(), e.getTitle(), e.getNumEpisodes()))
                 .collect(Collectors.toList());
+    }
+
+    public List<SerieDTO> obtainSeriesByCategory(String nameGenre) {
+        Category category = Category.fromString(nameGenre);
+        return dataConverter(repository.findByGenre(category));
     }
 
     public List<SerieDTO> dataConverter(List<Serie> serie) {
